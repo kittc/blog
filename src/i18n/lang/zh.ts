@@ -4,6 +4,7 @@ export default {
   nav: {
     home: "首页",
     posts: "文章",
+    notes: "碎语",
     tags: "标签",
     about: "关于",
     archives: "归档",
@@ -15,6 +16,7 @@ export default {
     share: "分享",
     shareCopied: "复制成功",
     shareCopyFailed: "复制失败，请手动复制",
+    copyLink: "复制链接",
     tagLabel: "标签",
     backToTop: "回到顶部",
     goBack: "返回",
@@ -46,6 +48,11 @@ export default {
 
     postsTitle: "文章",
     postsDesc: "我发布的所有文章。",
+
+    notesTitle: "碎语",
+    notesDesc: "随手记下的碎片，攒着看。",
+    notesEmpty: "还没有碎语。",
+    notesTagDesc: "带有此标签的全部碎语",
 
     archivesTitle: "归档",
     archivesDesc: "所有已归档的文章。",

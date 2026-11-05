@@ -48,12 +48,32 @@ tags:
 
 内容集合的筛选规则是 `**/[^_]*.{md,mdx}`，它只排除**文件名**以下划线开头的文章，不会排除下划线开头的目录——`posts/_draft/foo.md` 依然会被发布。想暂存草稿请用 `draft: true`，或把文件移出 `posts/`。
 
+## 写碎语
+
+`/notes` 是短内容时间流，一条一个文件，放在 `src/content/notes/`，没有标题和摘要——正文就是全部内容：
+
+```yaml
+---
+pubDatetime: 2026-11-05T19:30:00+08:00
+tags:
+  - 随笔
+---
+给博客加了个「碎语」栏目，随手记两句。
+```
+
+- 文件名建议用 `YYYY-MM-DD-HHmm.md`，它同时是锚点 id（`/notes/#n-2026-11-05-1930`）。
+- 正文支持 Markdown，图片用相对路径写在正文里，构建时会走 Astro 的图片优化。
+- 可选字段只有 `draft`、`tags`、`timezone`；标签会链接到 `/notes/tags/<tag>/`，与文章的 `/tags/<tag>/` 互不干扰。
+- 分页条数在 `astro-paper.config.ts` 的 `notes.perPage`；关掉整个栏目设 `features.showNotes: false`，路由与导航会一并消失。
+- 碎语暂不进入主 RSS 与站内搜索，避免把长文流冲淡。
+
 ## 目录结构
 
 ```
 src/
 ├── components/        页面组件
 ├── content/
+│   ├── notes/         碎语（短内容）
 │   ├── pages/         独立页面（关于）
 │   └── posts/         文章
 ├── i18n/lang/         界面文案（zh / en）

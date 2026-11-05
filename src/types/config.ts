@@ -34,6 +34,11 @@ interface PostsConfig {
   scheduledPostMargin?: number;
 }
 
+interface NotesConfig {
+  /** Notes per page on the /notes timeline */
+  perPage?: number;
+}
+
 interface FeaturesConfig {
   /** Enable light/dark mode toggle. Defaults to true. */
   lightAndDarkMode?: boolean;
@@ -60,6 +65,8 @@ interface FeaturesConfig {
    * Set to false to disable search entirely.
    */
   search?: "pagefind" | false;
+  /** Show the /notes (“碎语”) timeline and link it in nav. Defaults to true. */
+  showNotes?: boolean;
 }
 
 interface SocialLink {
@@ -80,6 +87,7 @@ interface SocialLink {
 interface AstroPaperConfig {
   site: SiteConfig;
   posts?: PostsConfig;
+  notes?: NotesConfig;
   features?: FeaturesConfig;
   /** Social profile links shown in header/footer */
   socials?: SocialLink[];
@@ -103,6 +111,7 @@ type ResolvedSiteConfig = Required<
 export interface ResolvedAstroPaperConfig {
   site: ResolvedSiteConfig;
   posts: Required<PostsConfig>;
+  notes: Required<NotesConfig>;
   features: Required<FeaturesConfig>;
   socials: SocialLink[];
 }

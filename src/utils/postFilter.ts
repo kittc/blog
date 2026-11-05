@@ -1,4 +1,3 @@
-import type { CollectionEntry } from "astro:content";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -9,18 +8,31 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 /**
- * Determines whether a post is eligible to be listed/rendered.
+ * Structural shape shared by every dated collection (`posts`, `notes`), so one
+ * filter serves both without duplicating the publishing rules.
+ */
+export type Publishable = {
+  data: {
+    draft?: boolean;
+    pubDatetime: Date;
+    timezone?: string;
+  };
+};
+
+/**
+ * Determines whether an entry is eligible to be listed/rendered.
  *
  * - Excludes drafts always
- * - In production, excludes posts whose `pubDatetime` falls on a later calendar
- *   day than the build date, both read in the site (or per-post) timezone
- * - In dev, always shows non-draft posts to make authoring easier
+ * - In production, excludes entries whose `pubDatetime` falls on a later
+ *   calendar day than the build date, both read in the site (or per-entry)
+ *   timezone
+ * - In dev, always shows non-draft entries to make authoring easier
  *
- * Publishing is day-granular by design: a post becomes visible on its
+ * Publishing is day-granular by design: an entry becomes visible on its
  * `pubDatetime` day, not at a time of day. `Datetime.astro` uses the same
  * timezone, so the byline shows that day unless a later `modDatetime` is set.
  */
-export function postFilter({ data }: CollectionEntry<"posts">) {
+export function postFilter({ data }: Publishable) {
   if (data.draft) return false;
   if (import.meta.env.DEV) return true;
 

@@ -4,6 +4,7 @@ import { glob } from "astro/loaders";
 import config from "@/config";
 
 export const BLOG_PATH = "src/content/posts";
+export const NOTES_PATH = "src/content/notes";
 
 const posts = defineCollection({
   loader: glob({ pattern: "**/[^_]*.{md,mdx}", base: `./${BLOG_PATH}` }),
@@ -38,4 +39,23 @@ const pages = defineCollection({
   }),
 });
 
-export const collections = { posts, pages };
+/**
+ * Short posts (“碎语”). No title or description by design — the body is the
+ * whole entry. Images come from the Markdown body via relative paths, which
+ * Astro resolves through `astro:assets`.
+ */
+const notes = defineCollection({
+  loader: glob({ pattern: "**/[^_]*.{md,mdx}", base: `./${NOTES_PATH}` }),
+  schema: z.object({
+    pubDatetime: z.date(),
+    draft: z.boolean().optional(),
+    tags: z.array(z.string()).default([]),
+    // An empty value means "not set", so the site timezone applies.
+    timezone: z
+      .string()
+      .optional()
+      .transform(tz => tz || undefined),
+  }),
+});
+
+export const collections = { posts, pages, notes };

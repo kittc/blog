@@ -4,6 +4,7 @@ export default {
   nav: {
     home: "Home",
     posts: "Posts",
+    notes: "Notes",
     tags: "Tags",
     about: "About",
     archives: "Archives",
@@ -15,6 +16,7 @@ export default {
     share: "Share",
     shareCopied: "Copied",
     shareCopyFailed: "Copy failed. Please copy manually.",
+    copyLink: "Copy link",
     tagLabel: "Tags",
     backToTop: "Back to top",
     goBack: "Go back",
@@ -46,6 +48,11 @@ export default {
 
     postsTitle: "Posts",
     postsDesc: "All the articles I've posted.",
+
+    notesTitle: "Notes",
+    notesDesc: "Short thoughts, collected.",
+    notesEmpty: "No notes yet.",
+    notesTagDesc: "All the notes with the tag",
 
     archivesTitle: "Archives",
     archivesDesc: "All the articles I've archived.",

@@ -26,11 +26,18 @@ const decodeSegment = (value: string) => {
 
 const navLabels: Record<string, string> = {
   posts: t.nav.posts,
+  notes: t.nav.notes,
   tags: t.nav.tags,
   about: t.nav.about,
   archives: t.nav.archives,
   search: t.nav.search,
 };
+
+/** "碎语 (第 2 页)" — page 1 is the section itself, so no suffix. */
+const withPageNumber = (label: string, pageNumber: string | number) =>
+  Number(pageNumber) > 1
+    ? `${label} (${tplStr(t.pagination.page, { page: pageNumber })})`
+    : label;
 
 // if breadcrumb is Home > Posts > [page] <etc>
 // replace Posts with localized "Posts (page number)"
@@ -38,7 +45,16 @@ if (breadcrumbList[0] === "posts") {
   breadcrumbList.splice(
     0,
     2,
-    `${t.nav.posts} (${tplStr(t.pagination.page, { page: breadcrumbList[1] || 1 })})`
+    withPageNumber(t.nav.posts, breadcrumbList[1] || 1)
+  );
+}
+
+// if breadcrumb is Home > Notes > [page] <etc>
+if (breadcrumbList[0] === "notes" && breadcrumbList.length === 2) {
+  breadcrumbList.splice(
+    0,
+    2,
+    withPageNumber(t.nav.notes, breadcrumbList[1] || 1)
   );
 }
 

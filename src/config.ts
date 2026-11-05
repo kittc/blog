@@ -26,10 +26,14 @@ const config: ResolvedAstroPaperConfig = {
     // Deprecated and unused. Not read from userConfig, so builds don't warn about it.
     scheduledPostMargin: 15 * 60 * 1000,
   },
+  notes: {
+    perPage: userConfig.notes?.perPage ?? 20,
+  },
   features: {
     lightAndDarkMode: userConfig.features?.lightAndDarkMode ?? true,
     dynamicOgImage: userConfig.features?.dynamicOgImage ?? true,
     showArchives: userConfig.features?.showArchives ?? true,
+    showNotes: userConfig.features?.showNotes ?? true,
     showBackButton: userConfig.features?.showBackButton ?? true,
     editPost: userConfig.features?.editPost ?? { enabled: false },
     search: userConfig.features?.search ?? "pagefind",

@@ -1,0 +1,106 @@
+---
+import type { CollectionEntry } from "astro:content";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import NoteCard from "./NoteCard.astro";
+import { resolveTimezone } from "@/utils/resolveTimezone";
+import config from "@/config";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+type Props = {
+  /** Notes sorted newest first. */
+  notes: CollectionEntry<"notes">[];
+};
+
+const { notes } = Astro.props;
+
+const locale = Astro.currentLocale ?? config.site.lang;
+
+type Group = {
+  key: string;
+  label: string;
+  notes: CollectionEntry<"notes">[];
+};
+
+// Notes arrive newest-first, so notes sharing a day are always adjacent.
+const groups: Group[] = [];
+for (const note of notes) {
+  const tz = resolveTimezone(note.data.timezone ?? config.site.timezone);
+  const key = dayjs(note.data.pubDatetime).tz(tz).format("YYYY-MM-DD");
+  const current = groups.at(-1);
+
+  if (current?.key === key) {
+    current.notes.push(note);
+    continue;
+  }
+
+  groups.push({
+    key,
+    label: new Intl.DateTimeFormat(locale, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      timeZone: tz,
+    }).format(note.data.pubDatetime),
+    notes: [note],
+  });
+}
+---
+
+<div id="notes-timeline">
+  {
+    groups.map(group => (
+      <section class="mb-10">
+        <h2 class="text-muted-foreground mb-4 text-sm font-medium tracking-wide">
+          {group.label}
+          <span class="ms-1 opacity-60">· {group.notes.length}</span>
+        </h2>
+        <ol class="border-border ms-1 border-s border-dashed ps-5">
+          {group.notes.map(note => (
+            <NoteCard {note} />
+          ))}
+        </ol>
+      </section>
+    ))
+  }
+</div>
+
+<div
+  id="notes-toast"
+  role="status"
+  aria-live="polite"
+  class="bg-foreground text-background pointer-events-none fixed inset-x-0 bottom-6 z-50 mx-auto w-fit rounded px-3 py-1.5 text-sm opacity-0 transition-opacity duration-200 motion-reduce:transition-none"
+>
+</div>
+
+<script>
+  import { copyText, flashMessage } from "@/scripts/clipboard";
+
+  function setupNotes() {
+    const timeline = document.getElementById("notes-timeline");
+    if (!timeline || timeline.dataset.bound === "true") return;
+    timeline.dataset.bound = "true";
+
+    timeline.addEventListener("click", async event => {
+      const button = (event.target as HTMLElement).closest<HTMLButtonElement>(
+        "[data-copy-link]"
+      );
+      const anchorId = button?.dataset.copyLink;
+      if (!button || !anchorId) return;
+
+      const url = `${location.origin}${location.pathname}#${anchorId}`;
+      const copied = await copyText(url);
+      const message = copied
+        ? (button.dataset.copied ?? "Copied")
+        : (button.dataset.failed ?? "Copy failed");
+
+      flashMessage(document.getElementById("notes-toast"), message);
+    });
+  }
+
+  setupNotes();
+  document.addEventListener("astro:page-load", setupNotes);
+</script>

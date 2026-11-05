@@ -36,73 +36,21 @@ const t = useTranslations(locale);
 </div>
 
 <script>
-  const TOAST_DURATION = 1800;
-
-  /**
-   * Copies text, falling back to a hidden textarea when the async Clipboard
-   * API is unavailable (insecure context or older browsers).
-   */
-  async function copyToClipboard(text: string): Promise<boolean> {
-    if (navigator.clipboard && window.isSecureContext) {
-      try {
-        await navigator.clipboard.writeText(text);
-        return true;
-      } catch {
-        // Permission denied or API blocked — try the legacy path below.
-      }
-    }
-
-    const textarea = document.createElement("textarea");
-    textarea.value = text;
-    textarea.setAttribute("readonly", "");
-    textarea.style.position = "fixed";
-    textarea.style.top = "-9999px";
-    textarea.style.opacity = "0";
-    document.body.append(textarea);
-    textarea.select();
-
-    let copied = false;
-    try {
-      copied = document.execCommand("copy");
-    } catch {
-      copied = false;
-    }
-    textarea.remove();
-    return copied;
-  }
+  import { copyText, flashMessage } from "@/scripts/clipboard";
 
   function setupShare() {
     const button = document.querySelector<HTMLButtonElement>("#share-post-btn");
     if (!button || button.dataset.bound === "true") return;
     button.dataset.bound = "true";
 
-    const toast = document.getElementById("share-toast");
-    let hideTimer: number | undefined;
-    let clearTimer: number | undefined;
-
     button.addEventListener("click", async () => {
       const shareTitle = button.dataset.shareTitle ?? document.title;
-      const copied = await copyToClipboard(`${shareTitle}\n${location.href}`);
-      if (!toast) return;
-
+      const copied = await copyText(`${shareTitle}\n${location.href}`);
       const message = copied
         ? (button.dataset.labelCopied ?? "Copied")
         : (button.dataset.labelFailed ?? "Copy failed");
 
-      window.clearTimeout(hideTimer);
-      window.clearTimeout(clearTimer);
-      toast.textContent = message;
-      toast.classList.remove("opacity-0");
-      toast.classList.add("opacity-100");
-
-      hideTimer = window.setTimeout(() => {
-        toast.classList.remove("opacity-100");
-        toast.classList.add("opacity-0");
-        // Clear after the fade so screen readers don't repeat stale text.
-        clearTimer = window.setTimeout(() => {
-          if (toast.textContent === message) toast.textContent = "";
-        }, 200);
-      }, TOAST_DURATION);
+      flashMessage(document.getElementById("share-toast"), message);
     });
   }
 

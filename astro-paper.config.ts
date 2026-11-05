@@ -16,6 +16,9 @@ export default defineAstroPaperConfig({
     perPage: 4,
     perIndex: 4,
   },
+  notes: {
+    perPage: 20,
+  },
   features: {
     lightAndDarkMode: true,
     // 动态 OG 图使用 Google Sans Code 等宽字体，缺少中文字形，先用静态 default-og.jpg
