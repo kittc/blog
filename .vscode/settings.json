@@ -9,6 +9,12 @@
   // 仓库统一 LF。Windows 默认 CRLF，会让 Git 反复提示换行符转换
   "files.eol": "\n",
 
+  // Astro 7 硬性要求 Node >= 22.23.4。本机默认 PATH 里的 node 可能是运行时
+  // 自带的旧版本，这里把系统安装的 Node 提前，保证 F5 与集成终端能直接跑起来
+  "terminal.integrated.env.windows": {
+    "PATH": "C:\\Program Files\\nodejs;${env:PATH}"
+  },
+
   // 写文章时自动折行，不用横向滚动
   "[markdown]": {
     "editor.wordWrap": "on",
