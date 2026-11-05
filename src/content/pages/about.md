@@ -15,4 +15,3 @@ description: "关于我和这个博客。"
 ## 联系我
 
 - GitHub：[@kittc](https://github.com/kittc)
-- Email：[rails@foxmail.com](mailto:rails@foxmail.com)
