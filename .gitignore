@@ -32,5 +32,8 @@ public/pagefind
 # wrangler local state
 .wrangler/
 
+# assistant workspace data (local notes, not part of the site)
+.workbuddy/
+
 # docker compose
 compose.override.yaml

@@ -12,9 +12,9 @@ export default {
   post: {
     publishedAt: "Published at",
     updatedAt: "Updated",
-    sharePostIntro: "Share this post:",
-    sharePostOn: "Share this post on {{platform}}",
-    sharePostViaEmail: "Share this post via email",
+    share: "Share",
+    shareCopied: "Copied",
+    shareCopyFailed: "Copy failed. Please copy manually.",
     tagLabel: "Tags",
     backToTop: "Back to top",
     goBack: "Go back",
@@ -25,7 +25,7 @@ export default {
   pagination: {
     prev: "Prev",
     next: "Next",
-    page: "Page",
+    page: "page {{page}}",
   },
   home: {
     socialLinks: "Social Links",

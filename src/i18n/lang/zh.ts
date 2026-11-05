@@ -12,9 +12,9 @@ export default {
   post: {
     publishedAt: "发布于",
     updatedAt: "更新于",
-    sharePostIntro: "分享这篇文章：",
-    sharePostOn: "分享到 {{platform}}",
-    sharePostViaEmail: "通过邮件分享这篇文章",
+    share: "分享",
+    shareCopied: "复制成功",
+    shareCopyFailed: "复制失败，请手动复制",
     tagLabel: "标签",
     backToTop: "回到顶部",
     goBack: "返回",
@@ -25,7 +25,7 @@ export default {
   pagination: {
     prev: "上一页",
     next: "下一页",
-    page: "第",
+    page: "第 {{page}} 页",
   },
   home: {
     socialLinks: "社交链接",

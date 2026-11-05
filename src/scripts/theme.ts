@@ -10,6 +10,10 @@ function getPreferredTheme(): string {
     : LIGHT;
 }
 
+/** True once the visitor has picked a theme themselves via the toggle. */
+const hasManualPreference = (): boolean =>
+  localStorage.getItem(THEME_KEY) !== null;
+
 // Reuse the value already set by the inline FOUC-prevention script if available.
 let themeValue: string =
   (window as unknown as { __theme?: { value: string } }).__theme?.value ??
@@ -60,10 +64,12 @@ document.addEventListener("astro:before-swap", event => {
   }
 });
 
-// Sync with OS-level dark/light preference changes.
+// Follow the OS preference only while the visitor hasn't chosen a theme
+// manually — an explicit pick must survive a system-level change.
 window
   .matchMedia("(prefers-color-scheme: dark)")
   .addEventListener("change", ({ matches }) => {
+    if (hasManualPreference()) return;
     themeValue = matches ? DARK : LIGHT;
-    persist();
+    reflect();
   });

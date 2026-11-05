@@ -10,9 +10,9 @@ export interface UIStrings {
   post: {
     publishedAt: string;
     updatedAt: string;
-    sharePostIntro: string;
-    sharePostOn: string;
-    sharePostViaEmail: string;
+    share: string;
+    shareCopied: string;
+    shareCopyFailed: string;
     tagLabel: string;
     backToTop: string;
     goBack: string;
@@ -23,6 +23,7 @@ export interface UIStrings {
   pagination: {
     prev: string;
     next: string;
+    /** Current page template, e.g. "第 {{page}} 页" */
     page: string;
   };
   home: {

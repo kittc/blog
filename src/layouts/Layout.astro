@@ -40,11 +40,11 @@ const rssHref = getAssetPath("rss.xml");
     <link rel="canonical" href={canonicalURL} />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- Font -->
-    <Font
-      cssVariable="--font-google-sans-code"
-      preload={[{ subset: "latin", weight: 400, style: "normal" }]}
-    />
+    <!--
+      Code font. Body text uses a system font stack (see theme.css), so this
+      file is only fetched when a page actually renders code.
+    -->
+    <Font cssVariable="--font-google-sans-code" />
 
     <!-- Primary meta -->
     <title>{title}</title>
