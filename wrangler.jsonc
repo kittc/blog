@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "kittc-blog",
+  "compatibility_date": "2026-11-01",
+  // 纯静态站点：Astro 以 `output: static` 构建，产物全部在 dist/，
+  // 直接作为静态资源上传，不经过 Worker 脚本、不消耗请求额度。
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+  },
+}

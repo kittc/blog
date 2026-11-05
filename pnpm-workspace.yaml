@@ -1,5 +1,8 @@
 # pnpm < 10.5 refuses a workspace file without `packages`
 packages: ["."]
+# pnpm 12 默认拦截依赖的 postinstall 脚本，未列出的包会导致 ERR_PNPM_IGNORED_BUILDS
+# 构建失败。wrangler 依赖的 workerd 需要 postinstall 下载平台二进制。
 allowBuilds:
   esbuild: true
   sharp: true
+  workerd: true

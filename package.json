@@ -10,6 +10,8 @@
     "dev": "astro dev",
     "build": "astro check && astro build && pagefind --site dist && node copy-pagefind.mjs",
     "preview": "astro preview",
+    "deploy": "pnpm build && wrangler deploy",
+    "cf:dev": "wrangler dev",
     "sync": "astro sync",
     "astro": "astro",
     "format:check": "prettier --check .",
@@ -46,6 +48,7 @@
     "prettier": "3.9.3",
     "prettier-plugin-astro": "0.14.1",
     "prettier-plugin-tailwindcss": "^0.8.1",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "wrangler": "4.157.0"
   }
 }

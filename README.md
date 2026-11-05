@@ -2,7 +2,7 @@
 
 个人博客的源码仓库 · 线上地址 [kittc.cn](https://kittc.cn)
 
-一个纯静态站点：文章以 Markdown 形式存放在仓库里，构建时预渲染成 HTML，部署在 Cloudflare Pages。没有数据库，没有常驻服务端，也没有后台管理界面——写一篇新文章就是新增一个文件然后 `git push`。
+一个纯静态站点：文章以 Markdown 形式存放在仓库里，构建时预渲染成 HTML，作为静态资源部署在 Cloudflare。没有数据库，没有常驻服务端，也没有后台管理界面——写一篇新文章就是新增一个文件然后 `git push`。
 
 ## 技术栈
 
@@ -12,7 +12,7 @@
 | 主题 | [AstroPaper](https://github.com/satnaing/astro-paper)          |
 | 样式 | Tailwind CSS 4                                                 |
 | 搜索 | [PageFind](https://pagefind.app/)（构建时生成静态索引）        |
-| 托管 | Cloudflare Pages                                               |
+| 托管 | Cloudflare Workers（静态资源）                                 |
 
 ## 本地运行
 
@@ -69,23 +69,27 @@ astro-paper.config.ts  站点配置：标题、作者、社交链接、功能开
 
 ## 部署
 
-推送到 `main` 即触发 Cloudflare Pages 自动构建。项目设置：
+站点托管在 Cloudflare Workers 的**静态资源**（Static Assets）上，不使用 SSR 适配器。`wrangler.jsonc` 把 `dist/` 整个目录声明为静态资产，构建产物原样上传，请求不经过 Worker 脚本。
 
-| 项目                   | 值                    |
-| ---------------------- | --------------------- |
-| Framework preset       | Astro                 |
-| Build command          | `pnpm build`          |
-| Build output directory | `dist`                |
-| 环境变量               | `NODE_VERSION` = `24` |
+推送到 `main` 即触发自动构建。Build 设置：
 
-仓库内的 `.node-version` 与 `package.json` 的 `packageManager` 字段已声明运行环境，Cloudflare 会直接采用。
+| 项目           | 值                    |
+| -------------- | --------------------- |
+| Build command  | `pnpm build`          |
+| Deploy command | `npx wrangler deploy` |
+| 环境变量       | `NODE_VERSION` = `24` |
 
-也可以本地直传：
+也可以在本地直传：
 
 ```bash
-pnpm build
-npx wrangler pages deploy dist --project-name=blog
+pnpm deploy   # 构建 + wrangler deploy
 ```
+
+`.node-version`、`package.json` 的 `packageManager` 与 `wrangler.jsonc` 已声明运行环境与产物位置，Cloudflare 会直接采用，无需在控制台覆盖。
+
+> 不要执行 `astro add cloudflare`。那是给 SSR 站点用的适配器，本项目是纯静态输出（Astro 默认 `output: static`），加上它会把 `dist` 变成 Worker 入口，并让 Pagefind 的静态搜索索引失效。
+
+`pnpm-workspace.yaml` 里的 `allowBuilds` 是必需项：pnpm 12 默认拦截依赖的 postinstall 脚本，`esbuild`、`sharp`、`workerd` 任一缺席都会导致安装失败（`ERR_PNPM_IGNORED_BUILDS`）。
 
 ## 已知取舍
 
