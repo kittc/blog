@@ -26,4 +26,4 @@ description: "开篇词，介绍时隔多年之后重新写个人网站的心境
 
 ---
 
-本站使用 [AstroPaper](https://github.com/satnaing/astro-paper) 主题，源码在 [kittc/blog](https://github.com/kittc/blog)。
+本站使用 [AstroPaper](https://github.com/satnaing/astro-paper) 主题。
