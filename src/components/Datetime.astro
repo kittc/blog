@@ -16,10 +16,6 @@ type Props = {
   pubDatetime: string | Date;
   timezone?: string;
   modDatetime?: string | Date | null;
-  /** dayjs format string. Defaults to "D MMM, YYYY". */
-  format?: string;
-  /** Show the calendar icon. Defaults to true. */
-  showIcon?: boolean;
 };
 
 const {
@@ -28,8 +24,6 @@ const {
   size = "sm",
   class: className = "",
   timezone: postTimezone,
-  format = "D MMM, YYYY",
-  showIcon = true,
 } = Astro.props;
 
 const t = useTranslations(Astro.currentLocale);
@@ -40,22 +34,18 @@ const datetime = dayjs(isModified ? modDatetime : pubDatetime).tz(
   resolveTimezone(postTimezone ?? config.site.timezone)
 );
 
-const date = datetime.format(format);
+const date = datetime.format("D MMM, YYYY");
 ---
 
 <div
   class:list={["text-muted-foreground flex items-center gap-x-2", className]}
 >
-  {
-    showIcon && (
-      <IconCalendar
-        class:list={[
-          "inline-block size-6 min-w-5.5",
-          { "scale-90": size === "sm" },
-        ]}
-      />
-    )
-  }
+  <IconCalendar
+    class:list={[
+      "inline-block size-6 min-w-5.5",
+      { "scale-90": size === "sm" },
+    ]}
+  />
   {
     isModified && (
       <span class:list={["text-sm", { "sm:text-base": size === "lg" }]}>

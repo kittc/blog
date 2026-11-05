@@ -1,11 +1,15 @@
 ---
 import { render, type CollectionEntry } from "astro:content";
-import IconShare from "@/assets/icons/IconShare.svg";
-import Datetime from "@/components/Datetime.astro";
-import Tag from "@/components/Tag.astro";
-import { useTranslations } from "@/i18n";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import { slugifyStr } from "@/utils/slugify";
+import { resolveTimezone } from "@/utils/resolveTimezone";
 import config from "@/config";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 type Props = {
   note: CollectionEntry<"notes">;
@@ -14,10 +18,13 @@ type Props = {
 const { note } = Astro.props;
 
 const { Content } = await render(note);
-const { pubDatetime, timezone, tags } = note.data;
+const { pubDatetime, timezone: noteTimezone, tags } = note.data;
 
 const locale = Astro.currentLocale ?? config.site.lang;
-const t = useTranslations(locale);
+
+const published = dayjs(pubDatetime).tz(
+  resolveTimezone(noteTimezone ?? config.site.timezone)
+);
 
 // The collection id is the filename stem, so it is stable across rebuilds.
 const anchorId = `n-${note.id}`;
@@ -25,61 +32,37 @@ const anchorId = `n-${note.id}`;
 
 {
   /*
-  Single-row layout: body · time · tags. The body is the only flexible column,
-  so it wraps inside itself while the metadata always stays on the same line.
-  `leading-7` matches the prose line-height (1.75rem), so the metadata boxes are
-  as tall as the body's first line and share its baseline.
+  One continuous line: body, then time, then tags, all inline. Only the last
+  paragraph becomes inline so multi-paragraph notes keep their breaks and the
+  metadata still trails the final sentence.
 */
 }
-<li
-  id={anchorId}
-  class="group relative flex scroll-mt-6 items-start gap-x-4 py-2.5"
->
+<li id={anchorId} class="relative scroll-mt-6 py-2.5">
   <span
     aria-hidden="true"
     class="bg-accent/60 absolute -inset-s-6 top-5 size-2 rounded-full"></span>
 
   <div
-    class="app-prose max-w-none min-w-0 flex-1 [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+    class="app-prose max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&>p:last-of-type]:inline"
   >
     <Content />
-  </div>
 
-  <div class="flex shrink-0 items-center gap-x-3 leading-7">
-    <Datetime
-      {pubDatetime}
-      {timezone}
-      format="HH:mm"
-      showIcon={false}
-      class="whitespace-nowrap"
-    />
+    <time
+      datetime={published.toISOString()}
+      class="text-muted-foreground ms-4 text-sm whitespace-nowrap tabular-nums"
+    >
+      {published.format("HH:mm")}
+    </time>
 
     {
-      tags.length > 0 && (
-        <ul class="flex items-center gap-x-3">
-          {tags.map(tag => (
-            <Tag
-              tag={slugifyStr(tag)}
-              tagName={tag}
-              size="sm"
-              basePath="notes/tags"
-              transition={false}
-            />
-          ))}
-        </ul>
-      )
+      tags.map(tag => (
+        <a
+          href={getRelativeLocaleUrl(locale, `notes/tags/${slugifyStr(tag)}/`)}
+          class="border-foreground hover:border-accent hover:text-accent focus-visible:text-accent ms-3 border-b-2 border-dashed text-sm whitespace-nowrap"
+        >
+          #{tag}
+        </a>
+      ))
     }
-
-    <button
-      type="button"
-      class="text-muted-foreground hover:text-accent focus-visible:text-accent inline-flex items-center opacity-60 transition-opacity hover:opacity-100 focus-visible:opacity-100"
-      data-copy-link={anchorId}
-      data-copied={t.post.shareCopied}
-      data-failed={t.post.shareCopyFailed}
-      title={t.post.copyLink}
-      aria-label={t.post.copyLink}
-    >
-      <IconShare class="size-3.5" aria-hidden="true" />
-    </button>
   </div>
 </li>

@@ -16,7 +16,6 @@ export default {
     share: "分享",
     shareCopied: "复制成功",
     shareCopyFailed: "复制失败，请手动复制",
-    copyLink: "复制链接",
     tagLabel: "标签",
     backToTop: "回到顶部",
     goBack: "返回",

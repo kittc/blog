@@ -14,7 +14,6 @@ export interface UIStrings {
     share: string;
     shareCopied: string;
     shareCopyFailed: string;
-    copyLink: string;
     tagLabel: string;
     backToTop: string;
     goBack: string;

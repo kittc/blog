@@ -50,7 +50,7 @@ for (const note of notes) {
 }
 ---
 
-<div id="notes-timeline">
+<div>
   {
     groups.map(group => (
       <section class="mb-10">
@@ -67,40 +67,3 @@ for (const note of notes) {
     ))
   }
 </div>
-
-<div
-  id="notes-toast"
-  role="status"
-  aria-live="polite"
-  class="bg-foreground text-background pointer-events-none fixed inset-x-0 bottom-6 z-50 mx-auto w-fit rounded px-3 py-1.5 text-sm opacity-0 transition-opacity duration-200 motion-reduce:transition-none"
->
-</div>
-
-<script>
-  import { copyText, flashMessage } from "@/scripts/clipboard";
-
-  function setupNotes() {
-    const timeline = document.getElementById("notes-timeline");
-    if (!timeline || timeline.dataset.bound === "true") return;
-    timeline.dataset.bound = "true";
-
-    timeline.addEventListener("click", async event => {
-      const button = (event.target as HTMLElement).closest<HTMLButtonElement>(
-        "[data-copy-link]"
-      );
-      const anchorId = button?.dataset.copyLink;
-      if (!button || !anchorId) return;
-
-      const url = `${location.origin}${location.pathname}#${anchorId}`;
-      const copied = await copyText(url);
-      const message = copied
-        ? (button.dataset.copied ?? "Copied")
-        : (button.dataset.failed ?? "Copy failed");
-
-      flashMessage(document.getElementById("notes-toast"), message);
-    });
-  }
-
-  setupNotes();
-  document.addEventListener("astro:page-load", setupNotes);
-</script>

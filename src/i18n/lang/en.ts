@@ -16,7 +16,6 @@ export default {
     share: "Share",
     shareCopied: "Copied",
     shareCopyFailed: "Copy failed. Please copy manually.",
-    copyLink: "Copy link",
     tagLabel: "Tags",
     backToTop: "Back to top",
     goBack: "Go back",
