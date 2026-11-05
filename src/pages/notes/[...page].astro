@@ -8,6 +8,7 @@ import Main from "@/components/Main.astro";
 import Footer from "@/components/Footer.astro";
 import Pagination from "@/components/Pagination.astro";
 import NoteTimeline from "./_components/NoteTimeline.astro";
+import NoteComposer from "./_components/NoteComposer.astro";
 import { getSortedNotes } from "@/utils/getSortedNotes";
 import { useTranslations } from "@/i18n";
 import config from "@/config";
@@ -44,6 +45,8 @@ const t = useTranslations(locale);
   </Main>
 
   <Pagination {page} />
+
+  {config.notes.compose && <NoteComposer {...config.notes.compose} />}
 
   <Footer noMarginTop={page.lastPage > 1} />
 </Layout>

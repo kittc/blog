@@ -1,0 +1,359 @@
+---
+import IconEdit from "@/assets/icons/IconEdit.svg";
+import { useTranslations } from "@/i18n";
+import config from "@/config";
+
+type Props = {
+  repo: string;
+  branch: string;
+  dir: string;
+};
+
+const { repo, branch, dir } = Astro.props;
+
+const locale = Astro.currentLocale ?? config.site.lang;
+const t = useTranslations(locale);
+---
+
+{
+  /*
+  Quick-compose entry for the notes timeline.
+
+  It stores nothing but a local draft: publishing builds a prefilled GitHub
+  "new file" URL and hands the commit to GitHub, which is what enforces write
+  permission. No token ever reaches this page, so there is no credential for a
+  script on this origin to steal.
+*/
+}
+<div
+  id="note-composer"
+  data-repo={repo}
+  data-branch={branch}
+  data-dir={dir}
+  data-msg-empty={t.compose.empty}
+  data-msg-copied={t.compose.copiedFallback}
+>
+  <button
+    id="note-composer-open"
+    type="button"
+    hidden
+    class="bg-accent text-accent-foreground fixed end-5 bottom-5 z-40 inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm shadow-lg transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dashed"
+  >
+    <IconEdit class="size-4" aria-hidden="true" />
+    {t.compose.open}
+  </button>
+
+  <dialog
+    id="note-composer-dialog"
+    aria-labelledby="note-composer-title"
+    class="border-border bg-background text-foreground m-auto max-h-[calc(100dvh-2rem)] w-[min(36rem,calc(100vw-2rem))] overflow-auto rounded-lg border p-5 shadow-xl"
+  >
+    <form id="note-composer-form" class="flex flex-col gap-3" novalidate>
+      <div class="flex items-start justify-between gap-4">
+        <h2 id="note-composer-title" class="text-base font-semibold">
+          {t.compose.title}
+        </h2>
+        <button
+          type="button"
+          data-close
+          class="text-muted-foreground hover:text-accent focus-visible:text-accent -mt-1 text-sm"
+        >
+          {t.compose.close}
+        </button>
+      </div>
+
+      <label for="note-composer-body" class="sr-only"
+        >{t.compose.bodyLabel}</label
+      >
+      <textarea
+        id="note-composer-body"
+        rows="6"
+        placeholder={t.compose.bodyPlaceholder}
+        class="border-border bg-background focus-visible:border-accent max-h-[50vh] min-h-32 w-full resize-y rounded border p-3 text-sm leading-relaxed outline-none"
+      ></textarea>
+
+      <div class="flex flex-col gap-1">
+        <label for="note-composer-tags" class="text-muted-foreground text-xs">
+          {t.compose.tagsLabel}
+        </label>
+        <input
+          id="note-composer-tags"
+          type="text"
+          placeholder={t.compose.tagsPlaceholder}
+          class="border-border bg-background focus-visible:border-accent w-full rounded border px-3 py-1.5 text-sm outline-none"
+        />
+      </div>
+
+      <p class="text-muted-foreground text-xs">{t.compose.hint}</p>
+
+      <p
+        id="note-composer-status"
+        role="status"
+        aria-live="polite"
+        class="text-xs text-(--accent)"
+      >
+      </p>
+
+      <div class="mt-1 flex flex-wrap items-center gap-2">
+        <button
+          type="submit"
+          class="bg-accent text-accent-foreground rounded px-3 py-1.5 text-sm hover:opacity-90"
+        >
+          {t.compose.publish}
+        </button>
+        <button
+          type="button"
+          data-close
+          class="border-border hover:border-accent rounded border px-3 py-1.5 text-sm"
+        >
+          {t.compose.cancel}
+        </button>
+        <span class="ms-auto flex items-center gap-3">
+          <button
+            type="button"
+            data-clear
+            class="text-muted-foreground hover:text-accent text-xs"
+          >
+            {t.compose.clear}
+          </button>
+          <button
+            type="button"
+            data-hide
+            class="text-muted-foreground hover:text-accent text-xs"
+          >
+            {t.compose.hide}
+          </button>
+        </span>
+      </div>
+    </form>
+  </dialog>
+</div>
+
+<style>
+  /* Preflight resets margins on `*`, so the UA's centering for dialogs is lost. */
+  #note-composer-dialog {
+    margin: auto;
+  }
+
+  #note-composer-dialog::backdrop {
+    background-color: rgb(0 0 0 / 45%);
+  }
+</style>
+
+<script>
+  const STORAGE_ENABLED = "notes-compose:enabled";
+  const STORAGE_DRAFT = "notes-compose:draft";
+
+  /** 8k characters is well under every browser's URL limit; past it we copy instead. */
+  const MAX_PREFILL_URL = 8000;
+
+  let keyHandlerBound = false;
+
+  const pad = (value: number) => String(value).padStart(2, "0");
+
+  type Draft = { body?: string; tags?: string };
+
+  function readDraft(): Draft | null {
+    try {
+      return JSON.parse(
+        localStorage.getItem(STORAGE_DRAFT) ?? "null"
+      ) as Draft | null;
+    } catch {
+      return null;
+    }
+  }
+
+  function setupComposer() {
+    const root = document.getElementById("note-composer");
+    if (!root || root.dataset.ready === "true") return;
+    root.dataset.ready = "true";
+
+    const openButton = root.querySelector<HTMLButtonElement>(
+      "#note-composer-open"
+    );
+    const dialog = root.querySelector<HTMLDialogElement>(
+      "#note-composer-dialog"
+    );
+    const form = root.querySelector<HTMLFormElement>("#note-composer-form");
+    const bodyInput = root.querySelector<HTMLTextAreaElement>(
+      "#note-composer-body"
+    );
+    const tagsInput = root.querySelector<HTMLInputElement>(
+      "#note-composer-tags"
+    );
+    const status = root.querySelector<HTMLElement>("#note-composer-status");
+    if (!openButton || !dialog || !form || !bodyInput || !tagsInput || !status)
+      return;
+
+    const repo = root.dataset.repo ?? "";
+    const branch = root.dataset.branch ?? "main";
+    const dir = root.dataset.dir ?? "src/content/notes";
+    const messageEmpty = root.dataset.msgEmpty ?? "";
+    const messageCopied = root.dataset.msgCopied ?? "";
+
+    // `?compose` or `#compose` turns the entry on and remembers it locally.
+    const params = new URLSearchParams(location.search);
+    if (params.has("compose") || location.hash === "#compose") {
+      localStorage.setItem(STORAGE_ENABLED, "1");
+    }
+
+    const syncEntry = () => {
+      openButton.hidden = localStorage.getItem(STORAGE_ENABLED) !== "1";
+    };
+    syncEntry();
+
+    const draft = readDraft();
+    if (draft) {
+      bodyInput.value = draft.body ?? "";
+      tagsInput.value = draft.tags ?? "";
+    }
+
+    let saveTimer: number | undefined;
+    const saveDraft = () => {
+      window.clearTimeout(saveTimer);
+      saveTimer = window.setTimeout(() => {
+        if (!bodyInput.value.trim() && !tagsInput.value.trim()) {
+          localStorage.removeItem(STORAGE_DRAFT);
+          return;
+        }
+        localStorage.setItem(
+          STORAGE_DRAFT,
+          JSON.stringify({ body: bodyInput.value, tags: tagsInput.value })
+        );
+      }, 300);
+    };
+    bodyInput.addEventListener("input", saveDraft);
+    tagsInput.addEventListener("input", saveDraft);
+
+    const openDialog = () => {
+      if (!dialog.open) dialog.showModal();
+      bodyInput.focus();
+      bodyInput.setSelectionRange(
+        bodyInput.value.length,
+        bodyInput.value.length
+      );
+    };
+
+    openButton.addEventListener("click", openDialog);
+
+    root.querySelectorAll<HTMLElement>("[data-close]").forEach(button => {
+      button.addEventListener("click", () => dialog.close());
+    });
+
+    root.querySelector("[data-clear]")?.addEventListener("click", () => {
+      bodyInput.value = "";
+      tagsInput.value = "";
+      localStorage.removeItem(STORAGE_DRAFT);
+      status.textContent = "";
+      bodyInput.focus();
+    });
+
+    root.querySelector("[data-hide]")?.addEventListener("click", () => {
+      localStorage.removeItem(STORAGE_ENABLED);
+      localStorage.removeItem(STORAGE_DRAFT);
+      syncEntry();
+      dialog.close();
+    });
+
+    if (!keyHandlerBound) {
+      keyHandlerBound = true;
+      document.addEventListener("keydown", event => {
+        if (!event.shiftKey || event.altKey || event.metaKey || event.ctrlKey)
+          return;
+        if (event.key !== "N" && event.key !== "n") return;
+
+        const target = event.target as HTMLElement | null;
+        if (
+          target?.isContentEditable ||
+          ["INPUT", "TEXTAREA", "SELECT"].includes(target?.tagName ?? "")
+        ) {
+          return;
+        }
+
+        // Re-query instead of closing over this instance: with view transitions
+        // the page can be swapped and these nodes detached.
+        const liveButton = document.querySelector<HTMLButtonElement>(
+          "#note-composer-open"
+        );
+        if (!liveButton) return;
+
+        event.preventDefault();
+        localStorage.setItem(STORAGE_ENABLED, "1");
+        liveButton.hidden = false;
+        liveButton.click();
+      });
+    }
+
+    /** Build the markdown note plus the GitHub URL that prefills it. */
+    const buildNote = (text: string, tagInput: string) => {
+      const now = new Date();
+      const offset = -now.getTimezoneOffset();
+      const sign = offset < 0 ? "-" : "+";
+      const abs = Math.abs(offset);
+      const day = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+      const time = `${pad(now.getHours())}${pad(now.getMinutes())}`;
+      const offsetText = `${sign}${pad(Math.floor(abs / 60))}:${pad(abs % 60)}`;
+      const iso = `${day}T${pad(now.getHours())}:${pad(now.getMinutes())}:00${offsetText}`;
+
+      const tags = tagInput
+        .split(/[\s,，]+/)
+        .map(tag => tag.replace(/^#+/, "").trim())
+        .filter(Boolean);
+
+      const front = ["---", `pubDatetime: ${iso}`];
+      if (tags.length) {
+        // JSON.stringify produces a valid YAML double-quoted scalar.
+        front.push("tags:", ...tags.map(tag => `  - ${JSON.stringify(tag)}`));
+      }
+      front.push("---");
+
+      const content = `${front.join("\n")}\n\n${text}\n`;
+      const base = `https://github.com/${repo}/new/${branch}/${dir}`;
+      const url = `${base}?filename=${encodeURIComponent(
+        `${day}-${time}.md`
+      )}&value=${encodeURIComponent(content)}`;
+
+      return { base, content, url };
+    };
+
+    const openUrl = (url: string) => {
+      const link = document.createElement("a");
+      link.href = url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.click();
+    };
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      status.textContent = "";
+
+      const text = bodyInput.value.trim();
+      if (!text) {
+        status.textContent = messageEmpty;
+        bodyInput.focus();
+        return;
+      }
+
+      const { base, content, url } = buildNote(text, tagsInput.value);
+
+      if (url.length > MAX_PREFILL_URL) {
+        // Too long to prefill: hand the markdown over through the clipboard.
+        void navigator.clipboard?.writeText(content).catch(() => undefined);
+        openUrl(base);
+        status.textContent = messageCopied;
+        return;
+      }
+
+      openUrl(url);
+      // The note now lives in the new tab, so drop the local draft.
+      bodyInput.value = "";
+      tagsInput.value = "";
+      localStorage.removeItem(STORAGE_DRAFT);
+      dialog.close();
+    });
+  }
+
+  setupComposer();
+  document.addEventListener("astro:page-load", setupComposer);
+</script>

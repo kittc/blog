@@ -18,6 +18,13 @@ export default defineAstroPaperConfig({
   },
   notes: {
     perPage: 20,
+    // /notes 右下角的「记一笔」入口。它只拼一个预填好正文的 GitHub 新建文件链接，
+    // 不保存任何 token；能否提交由 GitHub 的仓库权限决定。不想暴露就整段删掉。
+    compose: {
+      repo: "kittc/blog",
+      branch: "main",
+      dir: "src/content/notes",
+    },
   },
   features: {
     lightAndDarkMode: true,

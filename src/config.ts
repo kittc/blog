@@ -28,6 +28,7 @@ const config: ResolvedAstroPaperConfig = {
   },
   notes: {
     perPage: userConfig.notes?.perPage ?? 20,
+    compose: userConfig.notes?.compose ?? false,
   },
   features: {
     lightAndDarkMode: userConfig.features?.lightAndDarkMode ?? true,

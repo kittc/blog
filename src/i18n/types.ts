@@ -68,6 +68,22 @@ export interface UIStrings {
     goToPreviousPage: string;
     goToNextPage: string;
   };
+  compose: {
+    open: string;
+    title: string;
+    close: string;
+    bodyLabel: string;
+    bodyPlaceholder: string;
+    tagsLabel: string;
+    tagsPlaceholder: string;
+    hint: string;
+    publish: string;
+    cancel: string;
+    clear: string;
+    hide: string;
+    empty: string;
+    copiedFallback: string;
+  };
   notFound: {
     title: string;
     message: string;

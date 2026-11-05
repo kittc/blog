@@ -34,9 +34,24 @@ interface PostsConfig {
   scheduledPostMargin?: number;
 }
 
+interface NotesComposeConfig {
+  /** `<owner>/<repo>` that hosts this site, e.g. "kittc/blog". */
+  repo: string;
+  /** Branch the prefilled GitHub page commits to. */
+  branch: string;
+  /** Notes directory inside the repo, e.g. "src/content/notes". */
+  dir: string;
+}
+
 interface NotesConfig {
   /** Notes per page on the /notes timeline */
   perPage?: number;
+  /**
+   * Quick-compose entry on /notes. It only builds a prefilled GitHub
+   * "new file" URL — no token is stored or sent anywhere, and GitHub enforces
+   * write permission. Omit (or set false) to hide the entry entirely.
+   */
+  compose?: NotesComposeConfig | false;
 }
 
 interface FeaturesConfig {

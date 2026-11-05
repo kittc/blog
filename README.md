@@ -68,6 +68,18 @@ tags:
 - 分页条数在 `astro-paper.config.ts` 的 `notes.perPage`；关掉整个栏目设 `features.showNotes: false`，路由与导航会一并消失。
 - 碎碎念暂不进入主 RSS 与站内搜索，避免把长文流冲淡。
 
+### 快速记录入口（可选）
+
+`/notes` 右下角有一个「记一笔」浮动按钮，打开后是个站内小编辑器：写正文、填标签，点「去 GitHub 提交」，它会打开**预填好 frontmatter 与正文**的 GitHub 新建文件页，你在那里按一次 Commit 就完成发布。
+
+设计上有意不碰凭据：
+
+- 页面不保存、不发送任何 token。写权限由 GitHub 判定——没有仓库权限的人打开链接也提交不了。
+- 草稿只存在浏览器 localStorage（`notes-compose:draft`），发布后自动清空。
+- 超长的内容不适合塞进 URL，会降级为「复制到剪贴板 + 打开空白新建页」。
+
+入口默认对访客隐藏。三种方式唤起：地址栏加 `?compose`、按 `Shift + N`、或在编辑器里点过「隐藏入口」之前它一直可见。想彻底关掉，把 `astro-paper.config.ts` 里的 `notes.compose` 整段删掉（或设 `false`）；仓库/分支/目录也在那里配。
+
 ## 目录结构
 
 ```

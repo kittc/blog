@@ -74,4 +74,21 @@ export default {
     message: "Page Not Found",
     goHome: "Go back home",
   },
+  compose: {
+    open: "New note",
+    title: "New note",
+    close: "Close",
+    bodyLabel: "Body",
+    bodyPlaceholder: "Write whatever is on your mind…",
+    tagsLabel: "Tags",
+    tagsPlaceholder: "Space separated, optional",
+    hint: "“Open in GitHub” opens a prefilled new-file page — commit there and it ships.",
+    publish: "Open in GitHub",
+    cancel: "Cancel",
+    clear: "Clear",
+    hide: "Hide entry",
+    empty: "The note is still empty",
+    copiedFallback:
+      "The note is long, so it was copied to your clipboard — paste it into the GitHub editor",
+  },
 } satisfies UIStrings;
