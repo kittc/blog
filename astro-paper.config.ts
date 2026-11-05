@@ -28,7 +28,10 @@ export default defineAstroPaperConfig({
     },
     search: "pagefind",
   },
-  socials: [{ name: "github", url: "https://github.com/kittc" }],
+  socials: [
+    { name: "github", url: "https://github.com/kittc" },
+    { name: "mail", url: "mailto:me@kittc.cn" },
+  ],
   shareLinks: [
     { name: "whatsapp", url: "https://wa.me/?text=" },
     { name: "facebook", url: "https://www.facebook.com/sharer.php?u=" },

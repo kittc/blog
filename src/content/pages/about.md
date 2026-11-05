@@ -10,8 +10,9 @@ description: "关于我和这个博客。"
 - 框架：[Astro](https://astro.build/)，主题 [AstroPaper](https://github.com/satnaing/astro-paper)
 - 样式：Tailwind CSS
 - 搜索：PageFind，构建时生成静态索引，无需后端
-- 托管：Cloudflare Pages，全球边缘网络分发
+- 托管：Cloudflare Workers（静态资源），全球边缘网络分发
 
 ## 联系我
 
+- Email：[me@kittc.cn](mailto:me@kittc.cn)
 - GitHub：[@kittc](https://github.com/kittc)
