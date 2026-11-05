@@ -2,10 +2,16 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "command": "./node_modules/.bin/astro dev",
       "name": "Development server",
+      "type": "node-terminal",
       "request": "launch",
-      "type": "node-terminal"
+      "command": "./node_modules/.bin/astro dev",
+      // 端口就绪后自动用浏览器打开，免去手动复制地址
+      "serverReadyAction": {
+        "pattern": "Local\\s+http://localhost:(\\d+)",
+        "uriFormat": "http://localhost:%s",
+        "action": "openExternally"
+      }
     }
   ]
 }

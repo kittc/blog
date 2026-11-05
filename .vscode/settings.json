@@ -1,0 +1,38 @@
+{
+  // 保存时按仓库里的 Prettier 配置格式化，避免提交时出现纯格式 diff
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // Astro 文件走 Prettier 的 astro 插件
+  "prettier.documentSelectors": ["**/*.astro"],
+
+  // 仓库统一 LF。Windows 默认 CRLF，会让 Git 反复提示换行符转换
+  "files.eol": "\n",
+
+  // 写文章时自动折行，不用横向滚动
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    }
+  },
+
+  // 内置 Markdown 预览的字号与字体，便于对照排版
+  "markdown.preview.fontSize": 15,
+  "markdown.preview.lineHeight": 1.7,
+
+  // 构建产物与依赖不参与搜索，避免干扰
+  "search.exclude": {
+    "**/dist": true,
+    "**/node_modules": true,
+    "**/.astro": true,
+    "**/pnpm-lock.yaml": true
+  },
+  "files.watcherExclude": {
+    "**/dist/**": true,
+    "**/node_modules/**": true,
+    "**/.astro/**": true
+  }
+}

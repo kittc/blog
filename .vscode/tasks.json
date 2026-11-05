@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "dev（开发服务器）",
+      "type": "shell",
+      "command": "pnpm dev",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": {
+        "owner": "astro-dev",
+        "pattern": {
+          "regexp": "^(.*)$",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*(astro|vite).*$",
+          "endsPattern": "Local\\s+http://"
+        }
+      }
+    },
+    {
+      "label": "build（构建并检查）",
+      "type": "shell",
+      "command": "pnpm build",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "lint + format（提交前检查）",
+      "type": "shell",
+      "command": "pnpm lint && pnpm format:check",
+      "problemMatcher": []
+    }
+  ]
+}
