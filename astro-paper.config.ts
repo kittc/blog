@@ -2,8 +2,7 @@ import { defineAstroPaperConfig } from "./src/types/config";
 
 export default defineAstroPaperConfig({
   site: {
-    // TODO: 绑定 Cloudflare Pages 自定义域名后，改成正式地址（影响 RSS / sitemap / OG 卡片）
-    url: "https://blog.pages.dev/",
+    url: "https://kittc.cn/",
     title: "Kittc",
     description: "记录技术、产品与生活的一些思考。",
     author: "Kittc",

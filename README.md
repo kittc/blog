@@ -87,7 +87,9 @@ npx wrangler pages deploy dist --project-name=blog
 
 ### 自定义域名
 
-Cloudflare Pages 项目 → **Custom domains** → 添加域名。若域名的 DNS 也托管在 Cloudflare，添加后会自动建好 CNAME 记录并签发证书，无需手动配置。
+本站正式域名是 **`kittc.cn`**，已写入 `astro-paper.config.ts` 的 `site.url`。
+
+在 Cloudflare Pages 项目 → **Custom domains** 添加 `kittc.cn`（建议同时加 `www.kittc.cn` 并设成跳转到主域）。若域名的 DNS 也托管在 Cloudflare，添加后会自动建好记录并签发证书；若 DNS 在别处，按页面提示添加 `CNAME` 指向 `<项目名>.pages.dev`。
 
 ## 关于动态 OG 图
 
