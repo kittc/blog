@@ -33,7 +33,7 @@ const navLabels: Record<string, string> = {
   search: t.nav.search,
 };
 
-/** "碎语 (第 2 页)" — page 1 is the section itself, so no suffix. */
+/** "碎碎念 (第 2 页)" — page 1 is the section itself, so no suffix. */
 const withPageNumber = (label: string, pageNumber: string | number) =>
   Number(pageNumber) > 1
     ? `${label} (${tplStr(t.pagination.page, { page: pageNumber })})`

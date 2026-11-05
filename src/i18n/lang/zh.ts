@@ -4,7 +4,7 @@ export default {
   nav: {
     home: "首页",
     posts: "文章",
-    notes: "碎语",
+    notes: "碎碎念",
     tags: "标签",
     about: "关于",
     archives: "归档",
@@ -49,10 +49,10 @@ export default {
     postsTitle: "文章",
     postsDesc: "我发布的所有文章。",
 
-    notesTitle: "碎语",
+    notesTitle: "碎碎念",
     notesDesc: "随手记下的碎片，攒着看。",
-    notesEmpty: "还没有碎语。",
-    notesTagDesc: "带有此标签的全部碎语",
+    notesEmpty: "还没有碎碎念。",
+    notesTagDesc: "带有此标签的全部碎碎念",
 
     archivesTitle: "归档",
     archivesDesc: "所有已归档的文章。",

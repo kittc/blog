@@ -65,7 +65,7 @@ interface FeaturesConfig {
    * Set to false to disable search entirely.
    */
   search?: "pagefind" | false;
-  /** Show the /notes (“碎语”) timeline and link it in nav. Defaults to true. */
+  /** Show the /notes (“碎碎念”) timeline and link it in nav. Defaults to true. */
   showNotes?: boolean;
 }
 

@@ -23,22 +23,56 @@ const t = useTranslations(locale);
 const anchorId = `n-${note.id}`;
 ---
 
-<li id={anchorId} class="relative my-7 scroll-mt-6">
+{
+  /*
+  Single-row layout: body · time · tags. The body is the only flexible column,
+  so it wraps inside itself while the metadata always stays on the same line.
+  `leading-7` matches the prose line-height (1.75rem), so the metadata boxes are
+  as tall as the body's first line and share its baseline.
+*/
+}
+<li
+  id={anchorId}
+  class="group relative flex scroll-mt-6 items-start gap-x-4 py-2.5"
+>
   <span
     aria-hidden="true"
-    class="bg-accent/60 absolute -inset-s-6 top-2.5 size-2 rounded-full"></span>
+    class="bg-accent/60 absolute -inset-s-6 top-5 size-2 rounded-full"></span>
 
-  <div class="flex items-center gap-2">
+  <div
+    class="app-prose max-w-none min-w-0 flex-1 [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+  >
+    <Content />
+  </div>
+
+  <div class="flex shrink-0 items-center gap-x-3 leading-7">
     <Datetime
       {pubDatetime}
       {timezone}
       format="HH:mm"
       showIcon={false}
-      class="text-sm"
+      class="whitespace-nowrap"
     />
+
+    {
+      tags.length > 0 && (
+        <ul class="flex items-center gap-x-3">
+          {tags.map(tag => (
+            <Tag
+              tag={slugifyStr(tag)}
+              tagName={tag}
+              size="sm"
+              basePath="notes/tags"
+              transition={false}
+            />
+          ))}
+        </ul>
+      )
+    }
+
     <button
       type="button"
-      class="text-muted-foreground hover:text-accent focus-visible:text-accent inline-flex items-center gap-1 text-xs opacity-70 transition-opacity hover:opacity-100 focus-visible:opacity-100"
+      class="text-muted-foreground hover:text-accent focus-visible:text-accent inline-flex items-center opacity-60 transition-opacity hover:opacity-100 focus-visible:opacity-100"
       data-copy-link={anchorId}
       data-copied={t.post.shareCopied}
       data-failed={t.post.shareCopyFailed}
@@ -48,24 +82,4 @@ const anchorId = `n-${note.id}`;
       <IconShare class="size-3.5" aria-hidden="true" />
     </button>
   </div>
-
-  <div class="app-prose mt-2 max-w-none">
-    <Content />
-  </div>
-
-  {
-    tags.length > 0 && (
-      <ul class="mt-3 flex flex-wrap gap-x-4 gap-y-2">
-        {tags.map(tag => (
-          <Tag
-            tag={slugifyStr(tag)}
-            tagName={tag}
-            size="sm"
-            basePath="notes/tags"
-            transition={false}
-          />
-        ))}
-      </ul>
-    )
-  }
 </li>

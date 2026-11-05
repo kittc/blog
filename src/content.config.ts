@@ -40,7 +40,7 @@ const pages = defineCollection({
 });
 
 /**
- * Short posts (“碎语”). No title or description by design — the body is the
+ * Short posts (“碎碎念”). No title or description by design — the body is the
  * whole entry. Images come from the Markdown body via relative paths, which
  * Astro resolves through `astro:assets`.
  */
