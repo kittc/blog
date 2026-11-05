@@ -1,5 +1,5 @@
 ---
-import { getCollection } from "astro:content";
+import { getCollection, getEntry, render } from "astro:content";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import IconRss from "@/assets/icons/IconRss.svg";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
@@ -23,6 +23,17 @@ const sortedPosts = getSortedPosts(posts);
 const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
 const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
 const homePath = getRelativeLocaleUrl(locale, "");
+
+// 首页介绍文案存放在 src/content/pages/home.md，与文章一样用 Markdown 维护
+const home = await getEntry("pages", "home");
+
+if (!home) {
+  throw new Error(
+    "Missing content entry: `home.md` or `home.mdx` in `src/content/pages/`"
+  );
+}
+
+const { Content: HomeContent } = await render(home);
 ---
 
 <Layout>
@@ -35,7 +46,7 @@ const homePath = getRelativeLocaleUrl(locale, "");
   >
     <section id="hero" class="border-border border-b pt-8 pb-6">
       <h1 class="my-4 inline-block text-4xl font-bold sm:my-8 sm:text-5xl">
-        你好，我是 {config.site.title}
+        {home.data.title}
       </h1>{" "}
       <a
         target="_blank"
@@ -52,24 +63,9 @@ const homePath = getRelativeLocaleUrl(locale, "");
         <span class="sr-only">RSS Feed</span>
       </a>
 
-      <p>{config.site.description}</p>
-      <p class="mt-2">
-        可以看看{" "}
-        <LinkButton
-          class="hover:text-accent underline decoration-dashed underline-offset-4"
-          href={getRelativeLocaleUrl(locale, "posts")}
-        >
-          全部文章
-        </LinkButton>
-        ，或者了解一下{" "}
-        <LinkButton
-          class="hover:text-accent underline decoration-dashed underline-offset-4"
-          href={getRelativeLocaleUrl(locale, "about")}
-        >
-          关于我
-        </LinkButton>
-        。
-      </p>
+      <div class="app-prose max-w-none">
+        <HomeContent />
+      </div>
       {
         socials.length > 0 && (
           <div class="mt-4 flex max-sm:flex-col sm:items-center">
